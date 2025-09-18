@@ -13,5 +13,9 @@ public class Main {
 
     public Main() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        RainMap rainMap = new RainMap(20, 20, System.currentTimeMillis());
+        LOGGER.info("\n" + rainMap);
+
+
     }
 }
