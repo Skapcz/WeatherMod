@@ -1,11 +1,18 @@
 package WeatherMod;
 
 public class TestRainMap {
-    public static void main(String[] args) {
-        long seed = System.currentTimeMillis();
-        RainMap rainMap = new RainMap(100, 100, seed);
+    public static void main(String[] args) throws InterruptedException {
+        WeatherMap weatherMap = new WeatherMap(40, 40, 12345L, 0.05); // fixní seed
+        double globalWindX = 1.0;
+        double globalWindY = 0.0;
 
-        System.out.println("Seed: " + seed);
-        System.out.println(rainMap);
+        for (int t = 0; t < 20; t++) { // 20 "tiků" simulace
+            weatherMap.generate(t, globalWindX, globalWindY);
+
+            System.out.println("Time = " + t);
+            System.out.println(weatherMap);
+
+            Thread.sleep(500); // půl vteřiny pauza, ať to vypadá jako animace
+        }
     }
 }
