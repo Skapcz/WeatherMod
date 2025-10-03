@@ -14,7 +14,8 @@ public class WeatherMap {
 
 
     private float difuze = 0.05f;
-    private  float prumer;
+
+
 
     public WeatherMap(int width, int height, long seed, double scale) {
         this.width = width;
@@ -100,35 +101,43 @@ public class WeatherMap {
 
 
 
-                List<Integer> listX = new ArrayList<>();
-                List<Integer> listY = new ArrayList<>();
-
-                if (x + 1 < width && x + 1 >= 0) listX.add(x+1);
-
-                if (x - 1 < width && x - 1 >= 0) listX.add(x-1);
-
-                if (y + 1 < width && y + 1 >= 0) listX.add(y+1);
-
-                if (y - 1 < width && y - 1 >= 0) listX.add(y-1);
-
-                List<Float> hodnoty = new ArrayList<>();
-
-                for (int nx : listX){
-                    for (int ny : listY){
-                        hodnoty.add(grid[nx][ny].humidity);
-
-                    }
 
 
-                }
+
+                // Difúze vlhkosti
                 float sum = 0f;
-                for (float h : hodnoty) {
-                    sum += h;
+                int count = 0;
+
+                // nahoru
+                if (y - 1 >= 0) {
+                    sum += grid[x][y-1].humidity;
+                    count++;
                 }
-                prumer = sum / hodnoty.size();
+                // dole
+                if (y + 1 < height) {
+                    sum += grid[x][y+1].humidity;
+                    count++;
+                }
+                // vlevo
+                if (x - 1 >= 0) {
+                    sum += grid[x-1][y].humidity;
+                    count++;
+                }
+                // vpravo
+                if (x + 1 < width) {
+                    sum += grid[x+1][y].humidity;
+                    count++;
+                }
+
+                if (count > 0) {  // vždy kontroluj, aby nedošlo k dělení nulou
+                    float prumer = sum / count;
+                    cell.humidity = cell.humidity + difuze * (prumer - cell.humidity);
+                }
 
 
-                cell.humidity = cell.humidity + difuze * (prumer - cell.humidity);
+
+
+
 
 
 
