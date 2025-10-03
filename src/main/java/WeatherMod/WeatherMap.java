@@ -45,15 +45,9 @@ public class WeatherMap {
                 double normalized = (value + 1.0) / 2.0;
 
                 // nastavíme základní hodnoty buňky
-                cell.cloudiness = normalized;
-                cell.humidity = 0.5 + normalized * 0.5;
 
-                // srážky jen pokud je dost oblačnosti i vlhkosti
-                if (cell.cloudiness > 0.6 && cell.humidity > 0.6) {
-                    cell.precipitation = normalized;
-                } else {
-                    cell.precipitation = 0;
-                }
+
+
 
                 // určíme, kam by vítr odnesl část oblačnosti/vlhkosti
                 int targetX = (int) Math.round(x + windX);

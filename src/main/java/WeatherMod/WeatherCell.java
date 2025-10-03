@@ -1,11 +1,11 @@
 package WeatherMod;
 
 public class WeatherCell {
-    public double humidity;
-    public double cloudiness;
-    public double precipitation;
-    public double windX;
-    public double windY;
+    public float humidity;
+    public float cloudiness;
+    public float precipitation;
+    public float windX;
+    public float windY;
 
     public WeatherCell() {
         this.humidity = 0;
