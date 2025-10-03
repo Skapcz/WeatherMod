@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Double.sum;
+import static java.lang.Math.floor;
 
 public class WeatherMap {
     private final int width;          // šířka mapy
@@ -39,39 +40,26 @@ public class WeatherMap {
 
 
     // aktualizace počasí pro daný čas a vítr
-    public void generate(int time, double windX, double windY) {
+    public void generate(int time) {
         OpenSimplexNoise noise = new OpenSimplexNoise(seed);
 
-        // projdi všechny buňky mapy
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 WeatherCell cell = grid[x][y];
 
-                // vypočítáme souřadnice pro noise
-                double nx = (x + windX * time) * scale;
-                double ny = (y + windY * time) * scale;
-
-                // noise vrací hodnotu -1..1, převedeme na 0..1
+                double nx = x * scale;
+                double ny = y * scale;
                 double value = noise.eval(nx, ny);
                 double normalized = (value + 1.0) / 2.0;
 
-                // nastavíme základní hodnoty buňky
-
-
-
-
-                // určíme, kam by vítr odnesl část oblačnosti/vlhkosti
-                int targetX = (int) Math.round(x + windX);
-                int targetY = (int) Math.round(y + windY);
-
-                // pokud cíl existuje v mapě, přeneseme část hodnot
-                if (targetX >= 0 && targetX < width && targetY >= 0 && targetY < height) {
-                    WeatherCell target = grid[targetX][targetY];
-                    target.cloudiness += cell.cloudiness * 0.2;
-                    target.humidity += cell.humidity * 0.2;
-                }
+                // inicializace počátečních hodnot, např.
+                cell.humidity = (float) normalized;
+                cell.cloudiness = 0f;
+                cell.precipitation = 0f;
             }
         }
+
+
     }
 
     // vrací celý grid buněk
@@ -80,7 +68,7 @@ public class WeatherMap {
     }
 
     //projede celou mřížku a udělá základní operace
-    public void tick() {
+    public void tick(float windX, float windY) {
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 WeatherCell cell = grid[x][y];
@@ -134,21 +122,37 @@ public class WeatherMap {
                     cell.humidity = cell.humidity + difuze * (prumer - cell.humidity);
                 }
 
+                //posun mraků
+                double newPosX = x + windX;
+                double newPosY = y + windY;
+
+                int smallIntX = (int)newPosX;
+                int smallIntY = (int)newPosY;
 
 
+                int baseX = (int)Math.floor(newPosX);
+                int baseY = (int)Math.floor(newPosY);
 
+                float fracX = (float) newPosX - (float)baseX;
+                float fracY = (float) newPosY - (float)baseY;
 
+                float v00 = grid[baseX+1][baseY].humidity;
+                float v10 = grid[baseX-1][baseY].humidity;
+                float v01 = grid[baseX][baseY+1].humidity;
+                float v11 = grid[baseX][baseY-1].humidity;
 
+                float interpolated =
+                          v00 * (1-fracX)*(1-fracY)
+                        + v10 * fracX*(1-fracY)
+                        + v01 * (1-fracX)*fracY
+                        + v11 * fracX*fracY;
 
+                cell.humidity = interpolated;
 
-
+                cell.offsetX = fracX;
+                cell.offsetY = fracY;
             }
         }
-
-
-
-
-
     }
 
 

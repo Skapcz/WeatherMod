@@ -6,6 +6,8 @@ public class WeatherCell {
     public float precipitation;
     public float windX;
     public float windY;
+    public float offsetX;
+    public float offsetY;
 
     public WeatherCell() {
         this.humidity = 0;
