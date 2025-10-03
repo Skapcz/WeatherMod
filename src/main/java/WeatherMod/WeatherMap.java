@@ -117,18 +117,10 @@ public class WeatherMap {
                     count++;
                 }
 
-                if (count > 0) {  // vždy kontroluj, aby nedošlo k dělení nulou
-                    float prumer = sum / count;
-                    cell.humidity = cell.humidity + difuze * (prumer - cell.humidity);
-                }
 
                 //posun mraků
                 double newPosX = x + windX;
                 double newPosY = y + windY;
-
-                int smallIntX = (int)newPosX;
-                int smallIntY = (int)newPosY;
-
 
                 int baseX = (int)Math.floor(newPosX);
                 int baseY = (int)Math.floor(newPosY);
@@ -136,10 +128,10 @@ public class WeatherMap {
                 float fracX = (float) newPosX - (float)baseX;
                 float fracY = (float) newPosY - (float)baseY;
 
-                float v00 = grid[baseX+1][baseY].humidity;
-                float v10 = grid[baseX-1][baseY].humidity;
+                float v00 = grid[baseX][baseY].humidity;
+                float v10 = grid[baseX+1][baseY].humidity;
                 float v01 = grid[baseX][baseY+1].humidity;
-                float v11 = grid[baseX][baseY-1].humidity;
+                float v11 = grid[baseX+1][baseY+1].humidity;
 
                 float interpolated =
                           v00 * (1-fracX)*(1-fracY)
@@ -151,6 +143,15 @@ public class WeatherMap {
 
                 cell.offsetX = fracX;
                 cell.offsetY = fracY;
+
+
+                if (count > 0) {  // vždy kontroluj, aby nedošlo k dělení nulou
+                    float prumer = sum / count;
+                    cell.humidity = cell.humidity + difuze * (prumer - cell.humidity)
+                            + (1-difuze) * (interpolated - cell.humidity);
+
+                }
+
             }
         }
     }
