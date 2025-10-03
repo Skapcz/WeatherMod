@@ -27,6 +27,7 @@ public class WeatherMap {
         this(width, height, seed, 1);
     }
 
+
     // aktualizace počasí pro daný čas a vítr
     public void generate(int time, double windX, double windY) {
         OpenSimplexNoise noise = new OpenSimplexNoise(seed);
@@ -67,6 +68,36 @@ public class WeatherMap {
     public WeatherCell[][] getGrid() {
         return grid;
     }
+
+    //projede celou mřížku a udělá základní operace
+    public void tick() {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                WeatherCell cell = grid[x][y];
+
+                if (cell.humidity > 0.6f){
+                    cell.cloudiness += 0.002f;
+                }
+                if (cell.cloudiness > 0.8f){
+                    cell.precipitation += 0.1f;
+                }
+                if (cell.precipitation > 0.6f) {
+                    cell.humidity -= 0.05f;
+                }
+                // omezení všech hodnot do 0 do 1
+                cell.humidity = Math.max(0f, Math.min(1f, cell.humidity));
+                cell.cloudiness = Math.max(0f, Math.min(1f, cell.cloudiness));
+                cell.precipitation = Math.max(0f, Math.min(1f, cell.precipitation));
+
+            }
+        }
+
+
+
+
+
+    }
+
 
     // převod gridu na textovou reprezentaci (ASCII mapu)
     @Override
