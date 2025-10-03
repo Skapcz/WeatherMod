@@ -1,11 +1,20 @@
 package WeatherMod;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.Double.sum;
+
 public class WeatherMap {
     private final int width;          // šířka mapy
     private final int height;         // výška mapy
     private final double scale;       // určuje "zoom" do noise mapy
     private final long seed;          // náhodný seed pro noise
     private WeatherCell[][] grid;     // 2D pole buněk s počasím
+
+
+    private float difuze = 0.05f;
+    private  float prumer;
 
     public WeatherMap(int width, int height, long seed, double scale) {
         this.width = width;
@@ -88,6 +97,41 @@ public class WeatherMap {
                 cell.humidity = Math.max(0f, Math.min(1f, cell.humidity));
                 cell.cloudiness = Math.max(0f, Math.min(1f, cell.cloudiness));
                 cell.precipitation = Math.max(0f, Math.min(1f, cell.precipitation));
+
+
+
+                List<Integer> listX = new ArrayList<>();
+                List<Integer> listY = new ArrayList<>();
+
+                if (x + 1 < width && x + 1 >= 0) listX.add(x+1);
+
+                if (x - 1 < width && x - 1 >= 0) listX.add(x-1);
+
+                if (y + 1 < width && y + 1 >= 0) listX.add(y+1);
+
+                if (y - 1 < width && y - 1 >= 0) listX.add(y-1);
+
+                List<Float> hodnoty = new ArrayList<>();
+
+                for (int nx : listX){
+                    for (int ny : listY){
+                        hodnoty.add(grid[nx][ny].humidity);
+
+                    }
+
+
+                }
+                float sum = 0f;
+                for (float h : hodnoty) {
+                    sum += h;
+                }
+                prumer = sum / hodnoty.size();
+
+
+                cell.humidity = cell.humidity + difuze * (prumer - cell.humidity);
+
+
+
 
             }
         }
