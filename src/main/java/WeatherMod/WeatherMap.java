@@ -40,7 +40,7 @@ public class WeatherMap {
 
 
     // aktualizace počasí pro daný čas a vítr
-    public void generate(int time) {
+    public void generate() {
         OpenSimplexNoise noise = new OpenSimplexNoise(seed);
 
         for (int y = 0; y < height; y++) {
@@ -73,15 +73,21 @@ public class WeatherMap {
             for (int y = 0; y < height; y++) {
                 WeatherCell cell = grid[x][y];
 
-                if (cell.humidity > 0.6f){
-                    cell.cloudiness += 0.002f;
+                cell.humidity = cell.humidity * 0.1f;
+
+                if (cell.humidity > 0.4f){
+                    cell.cloudiness += 0.1f;
+
                 }
-                if (cell.cloudiness > 0.8f){
+
+                if (cell.cloudiness > 0.8f) {
                     cell.precipitation += 0.1f;
                 }
+
                 if (cell.precipitation > 0.6f) {
-                    cell.humidity -= 0.05f;
+
                 }
+
                 // omezení všech hodnot do 0 do 1
                 cell.humidity = Math.max(0f, Math.min(1f, cell.humidity));
                 cell.cloudiness = Math.max(0f, Math.min(1f, cell.cloudiness));
@@ -125,6 +131,11 @@ public class WeatherMap {
                 int baseX = (int)Math.floor(newPosX);
                 int baseY = (int)Math.floor(newPosY);
 
+                if (baseX < 0 || baseY < 0 || baseX+1 >= width || baseY+1 >= height) {
+                    continue; // přeskoč, nebo nastav default
+                }
+
+
                 float fracX = (float) newPosX - (float)baseX;
                 float fracY = (float) newPosY - (float)baseY;
 
@@ -143,6 +154,9 @@ public class WeatherMap {
 
                 cell.offsetX = fracX;
                 cell.offsetY = fracY;
+
+
+
 
 
                 if (count > 0) {  // vždy kontroluj, aby nedošlo k dělení nulou
@@ -167,13 +181,13 @@ public class WeatherMap {
                 String symbol;
 
                 // zobrazení srážek podle intenzity
-                if (cell.precipitation < 0.6) {
+                if (cell.cloudiness < 0.25f) {
                     symbol = "⚪";
-                } else if (cell.precipitation < 0.75) {
+                } else if (cell.cloudiness < 0.8f) {
                     symbol = "🔵";
-                } else if (cell.precipitation < 0.85) {
+                } else if (cell.precipitation < 0.50f) {
                     symbol = "🟢";
-                } else if (cell.precipitation < 0.95) {
+                } else if (cell.precipitation < 0.95f) {
                     symbol = "🟡";
                 } else {
                     symbol = "🔴";
