@@ -57,7 +57,7 @@ public class WeatherMap {
                 cell.humidity = (float)normalized;
                 cell.cloudiness = 0f;
                 cell.precipitation = 0f;
-
+                //nastavování
             }
         }
     }
