@@ -14,6 +14,8 @@ public class WeatherMap {
     private WeatherCell[][] grid;     // 2D pole buněk s počasím
 
 
+
+
     private float difuze = 0.05f;
 
 
@@ -41,26 +43,27 @@ public class WeatherMap {
 
     // aktualizace počasí pro daný čas a vítr
     public void generate() {
+
         OpenSimplexNoise noise = new OpenSimplexNoise(seed);
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                WeatherCell cell = grid[x][y];
-
                 double nx = x * scale;
                 double ny = y * scale;
                 double value = noise.eval(nx, ny);
                 double normalized = (value + 1.0) / 2.0;
 
-                // inicializace počátečních hodnot, např.
-                cell.humidity = (float) normalized;
+                WeatherCell cell = grid[x][y];
+                cell.humidity = (float)normalized;
                 cell.cloudiness = 0f;
                 cell.precipitation = 0f;
+
             }
         }
-
-
     }
+
+
+
 
     // vrací celý grid buněk
     public WeatherCell[][] getGrid() {
@@ -69,29 +72,49 @@ public class WeatherMap {
 
     //projede celou mřížku a udělá základní operace
     public void tick(float windX, float windY) {
+
+
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 WeatherCell cell = grid[x][y];
 
-                cell.humidity = cell.humidity * 0.1f;
 
-                if (cell.humidity > 0.4f){
-                    cell.cloudiness += 0.1f;
 
+
+
+
+                if (Math.random() < 0.002) {
+                    cell.humidity += 0.5f;   // vlhká fronta
                 }
 
-                if (cell.cloudiness > 0.8f) {
-                    cell.precipitation += 0.1f;
+
+
+                // --- tvorba oblačnosti ---
+                if (cell.humidity > 0.6f) {
+                    cell.cloudiness += 0.005f;
+                } else {
+                    cell.cloudiness -= 0.002f;
                 }
 
-                if (cell.precipitation > 0.6f) {
-
+                // --- tvorba srážek ---
+                if (cell.cloudiness > 0.7f && cell.humidity > 0.65f) {
+                    cell.precipitation += 0.01f;
+                } else if (cell.cloudiness < 0.5f || cell.humidity < 0.4f) {
+                    cell.precipitation -= 0.01f;
                 }
 
-                // omezení všech hodnot do 0 do 1
+
+                // --- zpětný vliv deště ---
+                if (cell.precipitation > 0.1f) {
+                    cell.humidity -= 0.01f * cell.precipitation;
+                    cell.cloudiness -= 0.005f * cell.precipitation;
+                }
+
+                // clamp
                 cell.humidity = Math.max(0f, Math.min(1f, cell.humidity));
                 cell.cloudiness = Math.max(0f, Math.min(1f, cell.cloudiness));
                 cell.precipitation = Math.max(0f, Math.min(1f, cell.precipitation));
+
 
 
 
@@ -125,19 +148,19 @@ public class WeatherMap {
 
 
                 //posun mraků
-                double newPosX = x + windX;
-                double newPosY = y + windY;
+                float srcX = x - windX;
+                float srcY = y - windY;
 
-                int baseX = (int)Math.floor(newPosX);
-                int baseY = (int)Math.floor(newPosY);
+                int baseX = (int)Math.floor(srcX);
+                int baseY = (int)Math.floor(srcY);
 
                 if (baseX < 0 || baseY < 0 || baseX+1 >= width || baseY+1 >= height) {
                     continue; // přeskoč, nebo nastav default
                 }
 
 
-                float fracX = (float) newPosX - (float)baseX;
-                float fracY = (float) newPosY - (float)baseY;
+                float fracX = srcX - (float)baseX;
+                float fracY = srcY - (float)baseY;
 
                 float v00 = grid[baseX][baseY].humidity;
                 float v10 = grid[baseX+1][baseY].humidity;
@@ -150,7 +173,8 @@ public class WeatherMap {
                         + v01 * (1-fracX)*fracY
                         + v11 * fracX*fracY;
 
-                cell.humidity = interpolated;
+
+
 
                 cell.offsetX = fracX;
                 cell.offsetY = fracY;
@@ -180,17 +204,23 @@ public class WeatherMap {
                 WeatherCell cell = grid[x][y];
                 String symbol;
 
-                // zobrazení srážek podle intenzity
-                if (cell.cloudiness < 0.25f) {
-                    symbol = "⚪";
-                } else if (cell.cloudiness < 0.8f) {
-                    symbol = "🔵";
-                } else if (cell.precipitation < 0.50f) {
-                    symbol = "🟢";
-                } else if (cell.precipitation < 0.95f) {
-                    symbol = "🟡";
+                if (cell.precipitation > 0.8f) {
+                    symbol = "🔴"; // liják
+                } else if (cell.precipitation > 0.6f) {
+                    symbol = "🟡"; // silný déšť
+                } else if (cell.precipitation > 0.3f) {
+                    symbol = "🟢"; // déšť
+                } else if (cell.precipitation > 0.1f) {
+                    symbol = "🔵"; // mrholení
                 } else {
-                    symbol = "🔴";
+                    // bez deště -> oblačnost
+                    if (cell.cloudiness > 0.7f) {
+                        symbol = "☁️"; // zataženo
+                    } else if (cell.cloudiness > 0.3f) {
+                        symbol = "⚪"; // částečně oblačno
+                    } else {
+                        symbol = "0"; // jasno
+                    }
                 }
 
                 sb.append(symbol).append(" ");
@@ -199,4 +229,5 @@ public class WeatherMap {
         }
         return sb.toString();
     }
+
 }

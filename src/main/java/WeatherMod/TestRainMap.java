@@ -1,13 +1,15 @@
 package WeatherMod;
 
+
+
 public class TestRainMap {
     public static void main(String[] args) throws InterruptedException {
-        WeatherMap weatherMap = new WeatherMap(40, 40, 12345L, 0.1); // fixní seed
-        float globalWindX = 1.0f;
-        float globalWindY = 0.0f;
+        WeatherMap weatherMap = new WeatherMap(30, 30, 12345L, 0.0001); // fixní seed
+        float globalWindX = 0.0f;
+        float globalWindY = 0.01f;
 
         weatherMap.generate();
-        for (int t = 0; t < 300; t++) { // 20 "tiků" simulace
+        for (int t = 0; t < 100; t++){
             weatherMap.tick(globalWindX, globalWindY);
 
             System.out.println("Time = " + t);
