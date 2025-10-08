@@ -1,10 +1,4 @@
-package WeatherMod;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.lang.Double.sum;
-import static java.lang.Math.floor;
+package com.github.WeatherMod;
 
 public class WeatherMap {
     private final int width;          // šířka mapy
@@ -61,7 +55,6 @@ public class WeatherMap {
             }
         }
     }
-
 
 
 

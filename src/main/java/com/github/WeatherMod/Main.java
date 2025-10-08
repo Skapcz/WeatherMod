@@ -1,4 +1,4 @@
-package WeatherMod;
+package com.github.WeatherMod;
 
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.eventbus.api.IEventBus;

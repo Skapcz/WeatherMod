@@ -1,4 +1,4 @@
-package WeatherMod;
+package com.github.WeatherMod;
 
 
 public class OpenSimplexNoise {
