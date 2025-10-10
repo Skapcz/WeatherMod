@@ -1,22 +1,39 @@
 package com.github.WeatherMod;
 
-
 import com.github.WeatherMod.common.weather.WeatherMap;
+import com.github.WeatherMod.common.noise.NoiseViewer;
 
 public class TestRainMap {
     public static void main(String[] args) throws InterruptedException {
-        WeatherMap weatherMap = new WeatherMap(30, 30, 12345L, 0.00001); // fixní seed
-        float globalWindX = 0.01f;
+        WeatherMap weatherMap = new WeatherMap(128, 128, 12345L, 0.02f); // seed a scale
+
+        float globalWindX = 0.001f;
         float globalWindY = 0.001f;
 
+        // vytvoření vieweru (jedno okno)
+        NoiseViewer viewer = new NoiseViewer(weatherMap.getGrid().length, weatherMap.getGrid()[0].length, 10);
+
         weatherMap.generate();
-        for (int t = 0; t < 100; t++){
+
+
+        float[][] data = new float[128][128]; // jen jednou před smyčkou
+
+        for (int t = 0; t < 10000; t++) {
             weatherMap.tick(globalWindX, globalWindY);
 
-            System.out.println("Time = " + t);
-            System.out.println(weatherMap);
 
-            Thread.sleep(500); // půl vteřiny pauza, ať to vypadá jako animace
+
+            for (int x = 0; x < weatherMap.getGrid().length; x++) {
+                for (int y = 0; y < weatherMap.getGrid()[0].length; y++) {
+                    data[x][y] = weatherMap.getGrid()[x][y].cloudiness;
+                }
+            }
+
+            // aktualizace okna
+            viewer.update(data);
+
+
+            Thread.sleep(100);
         }
     }
 }
