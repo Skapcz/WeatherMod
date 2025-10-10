@@ -1,4 +1,6 @@
-package com.github.WeatherMod;
+package com.github.WeatherMod.common.weather;
+
+import com.github.WeatherMod.common.noise.OpenSimplexNoise;
 
 public class WeatherMap {
     private final int width;          // šířka mapy
@@ -6,6 +8,9 @@ public class WeatherMap {
     private final double scale;       // určuje "zoom" do noise mapy
     private final long seed;          // náhodný seed pro noise
     private WeatherCell[][] grid;     // 2D pole buněk s počasím
+
+
+
 
 
 
@@ -49,8 +54,8 @@ public class WeatherMap {
 
                 WeatherCell cell = grid[x][y];
                 cell.humidity = (float)normalized;
-                cell.cloudiness = 0f;
-                cell.precipitation = 0f;
+                cell.cloudiness = (float)normalized;
+                cell.precipitation = (float)normalized;
                 //nastavování
             }
         }
@@ -71,37 +76,35 @@ public class WeatherMap {
             for (int y = 0; y < height; y++) {
                 WeatherCell cell = grid[x][y];
 
-
-
-
-
-
                 if (Math.random() < 0.002) {
                     cell.humidity += 0.5f;   // vlhká fronta
                 }
 
 
 
-                // --- tvorba oblačnosti ---
-                if (cell.humidity > 0.6f) {
-                    cell.cloudiness += 0.005f;
-                } else {
-                    cell.cloudiness -= 0.002f;
-                }
+
 
                 // --- tvorba srážek ---
                 if (cell.cloudiness > 0.7f && cell.humidity > 0.65f) {
                     cell.precipitation += 0.01f;
                 } else if (cell.cloudiness < 0.5f || cell.humidity < 0.4f) {
-                    cell.precipitation -= 0.01f;
+                    cell.precipitation -= 0.0001f;
                 }
 
 
                 // --- zpětný vliv deště ---
                 if (cell.precipitation > 0.1f) {
-                    cell.humidity -= 0.01f * cell.precipitation;
+                    cell.humidity -= 0.0001f * cell.precipitation;
                     cell.cloudiness -= 0.005f * cell.precipitation;
                 }
+
+
+
+
+
+
+
+
 
                 // clamp
                 cell.humidity = Math.max(0f, Math.min(1f, cell.humidity));
@@ -188,6 +191,7 @@ public class WeatherMap {
     }
 
 
+
     // převod gridu na textovou reprezentaci (ASCII mapu)
     @Override
     public String toString() {
@@ -195,24 +199,27 @@ public class WeatherMap {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 WeatherCell cell = grid[x][y];
+                int colorNumb = Math.round(cell.cloudiness*10 + 32);
+
+                final String Color = "\u001b["+colorNumb;
                 String symbol;
 
                 if (cell.precipitation > 0.8f) {
-                    symbol = "🔴"; // liják
+                    symbol = "\u001b[0;41m  \u001B[0m"; // liják
                 } else if (cell.precipitation > 0.6f) {
-                    symbol = "🟡"; // silný déšť
+                    symbol = "\u001b[0;43m  \u001B[0m"; // silný déšť
                 } else if (cell.precipitation > 0.3f) {
-                    symbol = "🟢"; // déšť
+                    symbol = "\u001b[0;42m  \u001B[0m"; // déšť
                 } else if (cell.precipitation > 0.1f) {
-                    symbol = "🔵"; // mrholení
+                    symbol = "\u001b[0;44m  \u001B[0m"; // mrholení
                 } else {
                     // bez deště -> oblačnost
                     if (cell.cloudiness > 0.7f) {
-                        symbol = "☁️"; // zataženo
-                    } else if (cell.cloudiness > 0.3f) {
-                        symbol = "⚪"; // částečně oblačno
+                        symbol = "\u001b[0;46m  \u001B[0m"; // zataženo
+                    } else if (cell.cloudiness > 0.4f) {
+                        symbol = "\u001b[0;47m  \u001B[0m"; // částečně oblačno
                     } else {
-                        symbol = "0"; // jasno
+                        symbol = "\u001b[0;40m  \u001B[0m"; // jasno
                     }
                 }
 

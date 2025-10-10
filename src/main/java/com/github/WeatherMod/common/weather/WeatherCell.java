@@ -1,4 +1,4 @@
-package com.github.WeatherMod;
+package com.github.WeatherMod.common.weather;
 
 public class WeatherCell {
     public float humidity;

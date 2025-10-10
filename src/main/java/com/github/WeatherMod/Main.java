@@ -1,5 +1,6 @@
 package com.github.WeatherMod;
 
+import com.github.WeatherMod.common.weather.WeatherMap;
 import com.mojang.logging.LogUtils;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;

@@ -1,12 +1,13 @@
 package com.github.WeatherMod;
 
 
+import com.github.WeatherMod.common.weather.WeatherMap;
 
 public class TestRainMap {
     public static void main(String[] args) throws InterruptedException {
-        WeatherMap weatherMap = new WeatherMap(30, 30, 12345L, 0.0001); // fixní seed
-        float globalWindX = 0.0f;
-        float globalWindY = 0.01f;
+        WeatherMap weatherMap = new WeatherMap(30, 30, 12345L, 0.00001); // fixní seed
+        float globalWindX = 0.01f;
+        float globalWindY = 0.001f;
 
         weatherMap.generate();
         for (int t = 0; t < 100; t++){
