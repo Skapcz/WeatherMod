@@ -4,22 +4,24 @@ import com.github.WeatherMod.common.weather.WeatherMap;
 import com.github.WeatherMod.common.noise.NoiseViewer;
 
 public class TestRainMap {
+    static int width = 512;
+    static int height = 512;
     public static void main(String[] args) throws InterruptedException {
-        WeatherMap weatherMap = new WeatherMap(128, 128, 12345L, 0.02f); // seed a scale
+        WeatherMap weatherMap = new WeatherMap(width, height, 12345L, 0.02f); // seed a scale
 
-        float globalWindX = 0.001f;
-        float globalWindY = 0.001f;
+        float globalWindX = 0.01f;
+        float globalWindY = 0.01f;
 
         // vytvoření vieweru (jedno okno)
-        NoiseViewer viewer = new NoiseViewer(weatherMap.getGrid().length, weatherMap.getGrid()[0].length, 10);
+        NoiseViewer viewer = new NoiseViewer(weatherMap.getGrid().length, weatherMap.getGrid()[0].length, 1);
 
         weatherMap.generate();
 
 
-        float[][] data = new float[128][128]; // jen jednou před smyčkou
+        float[][] data = new float[width][height]; // jen jednou před smyčkou
 
         for (int t = 0; t < 10000; t++) {
-            weatherMap.tick(globalWindX, globalWindY);
+            weatherMap.tick(globalWindX, globalWindY, t);
 
 
 
