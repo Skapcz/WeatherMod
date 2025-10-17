@@ -21,7 +21,7 @@ public class TestRainMap {
         float[][] data = new float[width][height]; // jen jednou před smyčkou
 
         for (int t = 0; t < 10000; t++) {
-            weatherMap.tick(globalWindX, globalWindY, t);
+            weatherMap.tick(globalWindX, globalWindY);
 
 
 
