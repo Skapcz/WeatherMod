@@ -15,23 +15,9 @@ public class WeatherMap {
     private WeatherCell[][] grid;     // 2D pole buněk s počasím
     float globalOffsetX;
     float globalOffsetY;
-    int numberOfLayers = 3;
-    float minScale = 0.001f;  // konec rozsahu
-    float maxScale = 0.1f;   // začátek rozsahu
-
-    private CloudLayer[] layer = new CloudLayer[numberOfLayers];
 
 
 
-
-
-
-
-
-
-
-
-    private float difuze = 0.05f;
 
 
 
@@ -50,23 +36,6 @@ public class WeatherMap {
                 grid[x][y] = new WeatherCell();
             }
         }
-
-
-        for (int i = 0; i < numberOfLayers; i++) {
-            layer[i] = new CloudLayer();
-            layer[i].map = new float[width][height];
-            layer[i].scale = (float) Math.pow(10, -i)*0.05f;
-            layer[i].windX = (float) scale  * 0.1f *(float)(Math.random()*i);
-            layer[i].windY = 0.01f;
-            layer[i].weight = 0.5f + 0.25f*i;
-            layer[i].offsetX = 0f; // začíná na nule
-            layer[i].offsetY = 0f;
-
-        }
-
-
-
-
     }
 
     // konstruktor s výchozím scale
@@ -98,7 +67,6 @@ public class WeatherMap {
     }
 
 
-
     // vrací celý grid buněk
     public WeatherCell[][] getGrid() {
         return grid;
@@ -122,55 +90,4 @@ public class WeatherMap {
             }
         }
     }
-
-    public float[][] getCloudinessMap() {
-        float[][] data = new float[width][height];
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                data[x][y] = grid[x][y].cloudiness;
-            }
-        }
-        return data;
-    }
-
-
-
-// převod gridu na textovou reprezentaci (ASCII mapu)
-//    @Override
-//    public String toString() {
-//        StringBuilder sb = new StringBuilder();
-//        for (int y = 0; y < height; y++) {
-//            for (int x = 0; x < width; x++) {
-//                WeatherCell cell = grid[x][y];
-//                int colorNumb = Math.round(cell.cloudiness*10 + 32);
-//
-//                final String Color = "\u001b["+colorNumb;
-//                String symbol;
-//
-//                if (cell.precipitation > 0.8f) {
-//                    symbol = "\u001b[0;41m  \u001B[0m"; // liják
-//                } else if (cell.precipitation > 0.6f) {
-//                    symbol = "\u001b[0;43m  \u001B[0m"; // silný déšť
-//                } else if (cell.precipitation > 0.3f) {
-//                    symbol = "\u001b[0;42m  \u001B[0m"; // déšť
-//                } else if (cell.precipitation > 0.1f) {
-//                    symbol = "\u001b[0;44m  \u001B[0m"; // mrholení
-//                } else {
-//                    // bez deště -> oblačnost
-//                    if (cell.cloudiness > 0.7f) {
-//                        symbol = "\u001b[0;46m  \u001B[0m"; // zataženo
-//                    } else if (cell.cloudiness > 0.4f) {
-//                        symbol = "\u001b[0;47m  \u001B[0m"; // částečně oblačno
-//                    } else {
-//                        symbol = "\u001b[0;40m  \u001B[0m"; // jasno
-//                    }
-//                }
-//
-//                sb.append(symbol).append(" ");
-//            }
-//            sb.append("\n");
-//        }
-//        return sb.toString();
-//    }
-
 }
