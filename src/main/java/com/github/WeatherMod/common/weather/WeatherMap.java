@@ -85,7 +85,7 @@ public class WeatherMap {
                 double nx = x * scale;
                 double ny = y * scale;
 
-                double value = NoiseUtils.fractalNoise(noise, 4,nx, ny,2.0, 0.5, 15.0, 0.02);
+                double value = NoiseUtils.fractalNoise(noise, 4,nx, ny,2.0, 0.5);
                 double normalized = (value + 1.0) / 2.0;
 
                 WeatherCell cell = grid[x][y];
@@ -114,7 +114,7 @@ public class WeatherMap {
 
                 double nx = (x * scale)+ globalOffsetX;
                 double ny = (y * scale)+ globalOffsetY;
-                double value = NoiseUtils.fractalNoise(noise, 4, nx, ny,2.0, 0.5, 10.0, 0.02);
+                double value = NoiseUtils.fractalNoise(noise, 4, nx, ny,2.0, 0.5);
 
                 double normalized = (value + 1.0) / 2.0;
                 cell.cloudiness = (float)normalized;
